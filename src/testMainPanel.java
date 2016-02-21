@@ -3,6 +3,7 @@ import java.awt.*;
 import java.io.File;
 
 import Frame.*;
+import utils.FileModel;
 
 /**
  * Created by ht on 2016/2/20.
@@ -31,7 +32,8 @@ public class testMainPanel {
             FileChooserFrame fileChooserFrame = new FileChooserFrame();
             fileChooserFrame.readFilePath(file);
             frame.setFileDirPath(fileChooserFrame.getFileDirPath());
-            frame.setFiles(new File(fileChooserFrame.getFileDirPath()).list());
+            FileModel fileModel = new FileModel(new File(fileChooserFrame.getFileDirPath()).list());
+            frame.getJlFileName().setModel(fileModel);
             frame.setVisible(true);
         } else {
             iframe.setVisible(true);

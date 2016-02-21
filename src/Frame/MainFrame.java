@@ -32,7 +32,6 @@ public class MainFrame extends JFrame {
     private JButton jbtDelete;
 
     private JList jlFileName;
-    private String[] files;
 
     private JTextField jtfPasswd;
     private JButton jbtCopy;
@@ -90,7 +89,6 @@ public class MainFrame extends JFrame {
         jpPasswdFun.add(jbtUpdate);
         jpPasswdFun.add(jbtDelete);
 
-        //test
         jlFileName = new JList();
         jlFileName.setBackground(Color.CYAN);
         jlFileName.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -256,11 +254,4 @@ public class MainFrame extends JFrame {
         this.fileDirPath = fileDirPath;
     }
 
-    public String[] getFiles() {
-        return files;
-    }
-
-    public void setFiles(String[] files) {
-        this.files = files;
-    }
 }
