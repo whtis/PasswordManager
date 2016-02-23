@@ -9,6 +9,7 @@ import java.io.File;
 
 /**
  * Created by ht on 2016/2/20.
+ * 这是监听密码列表（JList）的类
  */
 public class JListSelectionListener implements ListSelectionListener {
 

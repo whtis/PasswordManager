@@ -11,6 +11,7 @@ import java.io.*;
 
 /**
  * Created by ht on 2016/2/20.
+ *这是监听各个按钮的类
  */
 public class JButtonActionListener implements ActionListener {
 
@@ -29,6 +30,9 @@ public class JButtonActionListener implements ActionListener {
         if (e.getSource() == mainFrame.getJbtGenerate()) {
             generate(e, fileDirPath, ways);
             updateJList(fileDirPath);
+            if (mainFrame.getJcbAutoFresh().isSelected()) {
+                refreshMainFrame();
+            }
         } else if (e.getSource() == mainFrame.getJbtCheck()) {
             check(e, fileDirPath);
         } else if (e.getSource() == mainFrame.getJbtUpdate()) {
@@ -37,23 +41,33 @@ public class JButtonActionListener implements ActionListener {
             delete(e, fileDirPath);
             updateJList(fileDirPath);
         } else if (e.getSource() == mainFrame.getJbtCopy()) {
-            copy(e);
+            copy(e,mainFrame.getJtfPasswd().getText());
         } else if (e.getSource() == mainFrame.getJbtRefresh()) {
             refreshMainFrame();
+        } else if (e.getSource() == mainFrame.getJbtMD5()) {
+            copy(e,mainFrame.getJtfMD5().getText());
+        } else if (e.getSource() == mainFrame.getJtfKeyword()) {
+            generate(e, fileDirPath, ways);
+            updateJList(fileDirPath);
         }
     }
 
+    /*刷新主界面的方法*/
     private void refreshMainFrame() {
         mainFrame.getJtfName().setText("");
         mainFrame.getJtfFileName().setText("");
         mainFrame.getJtfKeyword().setText("");
         mainFrame.getJtfPasswd().setText("");
+        mainFrame.getJtfMD5().setText("");
         mainFrame.getJcbWord().setSelected(true);
         mainFrame.getJcbNumber().setSelected(true);
         mainFrame.getJcbSpecialChar().setSelected(false);
         mainFrame.getJcbFile().setSelected(false);
     }
 
+    /*
+    该方法生成密码并显示在主界面上
+     */
     private void generate(ActionEvent e, String fileDirPath, int[] ways) {
 
         //获取将要生成文件的信息
@@ -61,6 +75,9 @@ public class JButtonActionListener implements ActionListener {
         String name = mainFrame.getJtfName().getText();
         String keyWord = mainFrame.getJtfKeyword().getText();
 
+        if (!checkTextFiled(filename, name, keyWord)) {
+            return;
+        }
         boolean fileOfNew = false;
         if (ways[3] == PasswordIO.READ_BY_FILE) {
             File file = new File(fileDirPath + "/" + filename + ".wf");
@@ -85,6 +102,9 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+    该方法用于查看密码文件
+     */
     private void check(ActionEvent e, String fileDirPath) {
         String filename = mainFrame.getJtfFileName().getText();
         if (filename.equals("")) {
@@ -106,6 +126,9 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+    该方法用于更新密码文件
+     */
     private void update(ActionEvent e, String fileDirPath, int[] ways) {
         String filename = mainFrame.getJtfFileName().getText();
         String name = mainFrame.getJtfName().getText();
@@ -134,6 +157,9 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+    该方法用于删除密码文件
+     */
     private void delete(ActionEvent e, String fileDirPath) {
         String filename = mainFrame.getJtfFileName().getText();
         String name = mainFrame.getJtfName().getText();
@@ -157,6 +183,7 @@ public class JButtonActionListener implements ActionListener {
             mainFrame.getJtfName().setText("");
             mainFrame.getJtfKeyword().setText("");
             mainFrame.getJtfPasswd().setText("");
+            mainFrame.getJbtMD5().setText("");
             mainFrame.getJcbWord().setSelected(true);
             mainFrame.getJcbNumber().setSelected(true);
             mainFrame.getJcbSpecialChar().setSelected(false);
@@ -165,8 +192,10 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
-    private void copy(ActionEvent e) {
-        String password = mainFrame.getJtfPasswd().getText();
+    /*
+    该方法将指定的字符串复制到系统剪切板上
+     */
+    private void copy(ActionEvent e, String password) {
         if (password != null) {
             //获得系统剪切板
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -177,6 +206,10 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+    该方法JButtonActionListener的私有辅助方法，用来比对主界面上的内容是否和密码文件一样，以决定是否需要进行
+    更新操作
+     */
     private boolean checkFile(String filename, String name, File file, int[] ways, String s) {
         String[] results = new String[3];
         if (s.equals("w")) {
@@ -196,20 +229,29 @@ public class JButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+        该方法是JButtonActionListener的私有辅助方法，用于检查网站名、用户名和关键字是否存在
+     */
     //检查JTextField中的内容，返回true则表示检查通过
     private boolean checkTextFiled(String filename, String name, String keyWord) {
         if (filename.equals("")) {
             JOptionPane.showMessageDialog(null, "网站/网址为空，请确认");
+            mainFrame.getJlFileName().requestFocus();
             return false;
         } else if (name.equals("")) {
             JOptionPane.showMessageDialog(null, "用户名为空，请确认");
+            mainFrame.getJtfName().requestFocus();
             return false;
         } else if (keyWord.equals("")) {
             JOptionPane.showMessageDialog(null, "关键字为空，请确认");
+            mainFrame.getJtfKeyword().requestFocus();
             return false;
         } else return true;
     }
 
+    /*
+        该方法是JButtonActionListener的私有辅助方法，用于获取主界面上JCheckBox的内容
+     */
     private static int[] wayOfWrite(MainFrame mainFrame) {
         int[] cbStatus = new int[4];
 
@@ -226,6 +268,10 @@ public class JButtonActionListener implements ActionListener {
         return cbStatus;
     }
 
+    /*
+    该方法是JButtonActionListener的私有辅助方法，用于检测JList区域的变化，如果JList中文件有改动，则
+    执行该方法
+     */
     private void updateJList(String fileDirPath) {
         String[] files = new File(fileDirPath).list();
         FileModel fileModel = new FileModel(files);

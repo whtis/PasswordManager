@@ -6,6 +6,7 @@ import java.awt.event.*;
 
 /**
  * Created by ht on 2016/2/20.
+ * 这是监听各个复选框（JCheckBox）的类
  */
 public class JCheckBoxActionListener implements ActionListener {
 

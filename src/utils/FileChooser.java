@@ -1,21 +1,28 @@
-package Frame;
+package utils;
 
 import javax.swing.*;
 import java.io.*;
 
 /**
  * Created by ht on 2016/2/21.
+ * 这是一个工具类，用于程序初始化和每次启动时。程序初始化会在本地机器上写入一个配置文件，每次启动时会检查配置文件是否
+ * 存在，如果存在，则不会再出现初始化界面。
  */
-public class FileChooserFrame {
+public class FileChooser {
 
     private JFileChooser jFileChooser;
 
     private String fileDirPath;
 
-    public FileChooserFrame() {
+    public FileChooser() {
 
     }
 
+    /**
+     * 该方法用于向用户指定路径写入配置文件
+     * @param file
+     * file是将要写入的配置文件
+     */
     public void writeFilePath(File file) {
         jFileChooser = new JFileChooser(".");
         jFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -23,7 +30,6 @@ public class FileChooserFrame {
         if (i == jFileChooser.APPROVE_OPTION) {
             fileDirPath = jFileChooser.getSelectedFile().getAbsolutePath();
         }
-
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(file));
@@ -41,13 +47,17 @@ public class FileChooserFrame {
                 }
             }
         }
-
     }
 
+    /**
+     * 该方法在每次程序启动时读取配置文件
+     * @param file
+     * file是配置文件
+     */
     public void readFilePath(File file) {
         BufferedReader br = null;
         try {
-            br = new BufferedReader(new FileReader("Config.w"));
+            br = new BufferedReader(new FileReader(file));
             fileDirPath = br.readLine();
         } catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, "配置文件不存在，请检查");
@@ -66,6 +76,10 @@ public class FileChooserFrame {
         }
     }
 
+    /**
+     * 该方法用于从配置文件中读取密码存取路径，为了跨平台使用，对window平台上的路径做了处理
+     * @return
+     */
     public String getFileDirPath() {
         fileDirPath = fileDirPath.replaceAll("\\\\", "/");
         return fileDirPath;

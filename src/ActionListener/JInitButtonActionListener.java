@@ -1,13 +1,14 @@
 package ActionListener;
 
 import Frame.*;
+import utils.FileChooser;
 
-import javax.swing.*;
 import java.awt.event.*;
 import java.io.File;
 
 /**
  * Created by ht on 2016/2/21.
+ * 这是监听初始化界面按钮的类
  */
 public class JInitButtonActionListener implements ActionListener {
 
@@ -24,9 +25,12 @@ public class JInitButtonActionListener implements ActionListener {
         }
     }
 
+    /*
+    在程序第一次运行时，该方法确定文件的存储路径
+     */
     private void chooseFIleDir() {
         File file = new File("Config.w");
-        FileChooserFrame fcf = new FileChooserFrame();
+        FileChooser fcf = new FileChooser();
         fcf.writeFilePath(file);
         this.initFrame.setVisible(false);
         //初始化设置

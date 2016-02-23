@@ -8,6 +8,7 @@ import ActionListener.*;
 
 /**
  * Created by ht on 2016/2/21.
+ * 用户初次使用时，会出现该初始界面，用于确定密码文件的存储路径
  */
 public class InitFrame extends JFrame {
 

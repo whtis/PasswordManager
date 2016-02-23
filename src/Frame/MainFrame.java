@@ -8,6 +8,7 @@ import ActionListener.*;
 
 /**
  * Created by ht on 2016/2/20.
+ * 该类是主界面，在用户选取了密码存取路径之后，启动该界面。在该界面上，可以进行密码的生成、查看、更新和删除等功能。
  */
 public class MainFrame extends JFrame {
 
@@ -31,11 +32,15 @@ public class MainFrame extends JFrame {
     private JButton jbtUpdate;
     private JButton jbtDelete;
     private JButton jbtRefresh;
+    private JCheckBox jcbAutoFresh;
 
     private JList jlFileName;
 
     private JTextField jtfPasswd;
     private JButton jbtCopy;
+
+    private JTextField jtfMD5;
+    private JButton jbtMD5;
 
     private JTextFieldActionListener jTextFieldActionListener = new JTextFieldActionListener(this);
     private JCheckBoxActionListener jCheckBoxActionListener = new JCheckBoxActionListener(this);
@@ -84,6 +89,7 @@ public class MainFrame extends JFrame {
         jbtUpdate = new JButton("更新");
         jbtDelete = new JButton("删除");
         jbtRefresh = new JButton("刷新");
+        jcbAutoFresh = new JCheckBox("生成后刷新");
         JPanel jpPasswdFun = new JPanel(new FlowLayout());
         jpPasswdFun.setBorder(new TitledBorder("密码操作区"));
         jpPasswdFun.add(jbtGenerate);
@@ -91,36 +97,54 @@ public class MainFrame extends JFrame {
         jpPasswdFun.add(jbtUpdate);
         jpPasswdFun.add(jbtDelete);
         jpPasswdFun.add(jbtRefresh);
+        jpPasswdFun.add(jcbAutoFresh);
 
         jlFileName = new JList();
         jlFileName.setBackground(Color.CYAN);
         jlFileName.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(jlFileName);
         JPanel jpPasswdList = new JPanel(new BorderLayout());
-        jpPasswdList.add(scrollPane, BorderLayout.CENTER);
+        jpPasswdList.setBorder(new TitledBorder("密码列表区"));
+        jpPasswdList.add(scrollPane, BorderLayout.NORTH);
 
         jtfPasswd = new JTextField(40);
+        jtfPasswd.setEditable(false);
         jbtCopy = new JButton("复制");
-        JPanel jpShowPasswd = new JPanel(new FlowLayout());
-        jpShowPasswd.add(jtfPasswd);
-        jpShowPasswd.add(jbtCopy);
+        jtfMD5 = new JTextField(38);
+        jtfMD5.setEditable(false);
+        jbtMD5 = new JButton("复制MD5");
+        JPanel panel1 = new JPanel(new FlowLayout());
+        panel1.add(jtfPasswd);
+        panel1.add(jbtCopy);
+        JPanel panel2 = new JPanel(new FlowLayout());
+        panel2.add(jtfMD5);
+        panel2.add(jbtMD5);
+
+        JPanel jpShowPasswd = new JPanel(new BorderLayout());
+        jpShowPasswd.setBorder(new TitledBorder("密码显示区"));
+        jpShowPasswd.add(panel1, BorderLayout.NORTH);
+        jpShowPasswd.add(panel2,BorderLayout.SOUTH);
 
         JPanel southPanel = new JPanel(new BorderLayout());
         southPanel.add(jpPasswdFun, BorderLayout.NORTH);
-        southPanel.add(jpPasswdList, BorderLayout.CENTER);
-        southPanel.add(jpShowPasswd, BorderLayout.SOUTH);
+        southPanel.add(jpShowPasswd, BorderLayout.CENTER);
+        southPanel.add(jpPasswdList, BorderLayout.SOUTH);
 
         //给JTextField对象添加监听器
         jtfFileName.addActionListener(jTextFieldActionListener);
         jtfName.addActionListener(jTextFieldActionListener);
-        jtfKeyword.addActionListener(jTextFieldActionListener);
+        //给关键字文本添加按钮监听器，这样做是方便实现和生成按钮相同的功能
+        jtfKeyword.addActionListener(jButtonActionListener);
+
         jtfPasswd.addActionListener(jTextFieldActionListener);
+        jtfMD5.addActionListener(jTextFieldActionListener);
 
         //给JCheckBox对象添加监听器
         jcbWord.addActionListener(jCheckBoxActionListener);
         jcbNumber.addActionListener(jCheckBoxActionListener);
         jcbSpecialChar.addActionListener(jCheckBoxActionListener);
         jcbFile.addActionListener(jCheckBoxActionListener);
+        jcbAutoFresh.addActionListener(jCheckBoxActionListener);
 
         //给JButton对象添加监听器
         jbtGenerate.addActionListener(jButtonActionListener);
@@ -129,12 +153,14 @@ public class MainFrame extends JFrame {
         jbtDelete.addActionListener(jButtonActionListener);
         jbtCopy.addActionListener(jButtonActionListener);
         jbtRefresh.addActionListener(jButtonActionListener);
+        jbtMD5.addActionListener(jButtonActionListener);
 
         //给JList对象添加监听器
         jlFileName.addListSelectionListener(jListActionListener);
 
         this.setLayout(new BorderLayout());
         this.getContentPane().add(northPanel, BorderLayout.NORTH);
+        this.getContentPane().add(new JPanel());
         this.getContentPane().add(southPanel, BorderLayout.SOUTH);
     }
 
@@ -234,6 +260,14 @@ public class MainFrame extends JFrame {
         this.jbtRefresh = jbtRefresh;
     }
 
+    public JCheckBox getJcbAutoFresh() {
+        return jcbAutoFresh;
+    }
+
+    public void setJcbAutoFresh(JCheckBox jcbAutoFresh) {
+        this.jcbAutoFresh = jcbAutoFresh;
+    }
+
     public JList getJlFileName() {
         return jlFileName;
     }
@@ -256,6 +290,22 @@ public class MainFrame extends JFrame {
 
     public void setJbtCopy(JButton jbtCopy) {
         this.jbtCopy = jbtCopy;
+    }
+
+    public JButton getJbtMD5() {
+        return jbtMD5;
+    }
+
+    public void setJbtMD5(JButton jbtMD5) {
+        this.jbtMD5 = jbtMD5;
+    }
+
+    public JTextField getJtfMD5() {
+        return jtfMD5;
+    }
+
+    public void setJtfMD5(JTextField jtfMD5) {
+        this.jtfMD5 = jtfMD5;
     }
 
     public String getFileDirPath() {
