@@ -29,7 +29,7 @@ public class JInitButtonActionListener implements ActionListener {
     在程序第一次运行时，该方法确定文件的存储路径
      */
     private void chooseFIleDir() {
-        File file = new File("Config.w");
+        File file = new File(".pmconfig.w");
         FileChooser fcf = new FileChooser();
         fcf.writeFilePath(file);
         this.initFrame.setVisible(false);

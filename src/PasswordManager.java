@@ -28,7 +28,7 @@ public class PasswordManager {
         iframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //File可以写成配置文件，更加方便
-        File file = new File("Config.w");
+        File file = new File(".pmconfig.w");
         if (file.exists()) {
             FileChooser fileChooserFrame = new FileChooser();
             fileChooserFrame.readFilePath(file);
