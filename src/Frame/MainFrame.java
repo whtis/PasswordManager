@@ -30,6 +30,7 @@ public class MainFrame extends JFrame {
     private JButton jbtCheck;
     private JButton jbtUpdate;
     private JButton jbtDelete;
+    private JButton jbtRefresh;
 
     private JList jlFileName;
 
@@ -82,12 +83,14 @@ public class MainFrame extends JFrame {
         jbtCheck = new JButton("查看");
         jbtUpdate = new JButton("更新");
         jbtDelete = new JButton("删除");
+        jbtRefresh = new JButton("刷新");
         JPanel jpPasswdFun = new JPanel(new FlowLayout());
         jpPasswdFun.setBorder(new TitledBorder("密码操作区"));
         jpPasswdFun.add(jbtGenerate);
         jpPasswdFun.add(jbtCheck);
         jpPasswdFun.add(jbtUpdate);
         jpPasswdFun.add(jbtDelete);
+        jpPasswdFun.add(jbtRefresh);
 
         jlFileName = new JList();
         jlFileName.setBackground(Color.CYAN);
@@ -125,6 +128,7 @@ public class MainFrame extends JFrame {
         jbtUpdate.addActionListener(jButtonActionListener);
         jbtDelete.addActionListener(jButtonActionListener);
         jbtCopy.addActionListener(jButtonActionListener);
+        jbtRefresh.addActionListener(jButtonActionListener);
 
         //给JList对象添加监听器
         jlFileName.addListSelectionListener(jListActionListener);
@@ -220,6 +224,14 @@ public class MainFrame extends JFrame {
 
     public void setJbtDelete(JButton jbtDelete) {
         this.jbtDelete = jbtDelete;
+    }
+
+    public JButton getJbtRefresh() {
+        return jbtRefresh;
+    }
+
+    public void setJbtRefresh(JButton jbtRefresh) {
+        this.jbtRefresh = jbtRefresh;
     }
 
     public JList getJlFileName() {

@@ -16,6 +16,7 @@ public class testMainPanel {
 
         MainFrame frame = new MainFrame();
         frame.pack();
+        frame.setTitle("简易密码管理器");
         frame.setResizable(false);
         frame.setLocation(screenWidth / 2 - frame.getWidth() / 2, screenHeight / 2 - frame.getHeight() / 2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
