@@ -86,14 +86,14 @@ public class JButtonActionListener implements ActionListener {
             if (file.exists()) {
                 fileOfNew = checkFile(name, keyWord, file, ways, "wf");
             } else {
-                PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
+                PasswordIO.writeUseFileWay(filename, name, keyWord, ways, mainFrame);
             }
         } else {
             File binaryFile = new File(fileDirPath + "/" + filename + ".w");
             if (binaryFile.exists()) {
                 fileOfNew = checkFile(name, keyWord, binaryFile, ways, "w");
             } else {
-                PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
+                PasswordIO.writeUseBinaryWay(filename, name, keyWord, ways, mainFrame);
             }
         }
         if (fileOfNew) {
@@ -102,6 +102,11 @@ public class JButtonActionListener implements ActionListener {
                 update(e, fileDirPath, ways);
             }
         }
+        //生成密码后刷新页面，方便继续写下一个
+        if (mainFrame.getJcbAutoFresh().isSelected()) {
+            refreshMainFrame();
+        }
+
     }
 
     /*
@@ -147,30 +152,38 @@ public class JButtonActionListener implements ActionListener {
             File file = new File(fileDirPath + "/" + filename + ".wf");
             if (binaryFile.exists() && !file.exists()) {
                 if (checkFile(name, keyWord, binaryFile, ways, "w")) {
-                    PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
-                    JOptionPane.showMessageDialog(null,"数据更新成功！");
+                    boolean b = PasswordIO.writeUseBinaryWay(filename, name, keyWord, ways, mainFrame);
+                    if (b) {
+                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "数据重复，无需修改");
                 }
             } else if (file.exists() && !binaryFile.exists()) {
                 if (checkFile(name, keyWord, file, ways, "wf")) {
-                    PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
-                    JOptionPane.showMessageDialog(null, "数据更新成功！");
+                    boolean b = PasswordIO.writeUseFileWay(filename, name, keyWord, ways, mainFrame);
+                    if (b) {
+                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                    }
                 } else {
                     JOptionPane.showMessageDialog(null, "数据重复，无需修改");
                 }
             } else if (file.exists() && binaryFile.exists()) {
                 if (ways[3] == PasswordIO.READ_BY_FILE) {
                     if (checkFile(name, keyWord, file, ways, "wf")) {
-                        PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
-                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                        boolean b = PasswordIO.writeUseFileWay(filename, name, keyWord, ways, mainFrame);
+                        if (b) {
+                            JOptionPane.showMessageDialog(null, "数据更新成功！");
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "数据重复，无需修改");
                     }
                 } else {
                     if (checkFile(name, keyWord, binaryFile, ways, "w")) {
-                        PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
-                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                        boolean b = PasswordIO.writeUseBinaryWay(filename, name, keyWord, ways, mainFrame);
+                        if (b) {
+                            JOptionPane.showMessageDialog(null, "数据更新成功！");
+                        }
                     } else {
                         JOptionPane.showMessageDialog(null, "数据重复，无需修改");
                     }

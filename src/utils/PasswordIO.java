@@ -1,10 +1,12 @@
 package utils;
 
 import Frame.MainFrame;
+import sun.misc.BASE64Decoder;
 
 import javax.swing.*;
 import java.io.*;
 import java.security.MessageDigest;
+import java.util.regex.*;
 
 /**
  * Created by ht on 2016/2/20.
@@ -21,6 +23,7 @@ public class PasswordIO {
     获取md5工具类
      */
     private static MessageDigest md5 = null;
+
     static {
         try {
             md5 = MessageDigest.getInstance("MD5");
@@ -30,7 +33,7 @@ public class PasswordIO {
     }
 
     /**
-     * 该类用于向指定路径写入密码文件，为了保留主界面中所有的信息，采用了如下方法：每个密码文件单独存为一个
+     * 用于向指定路径写入密码文件，为了保留主界面中所有的信息，采用了如下方法：每个密码文件单独存为一个
      * 文件，文件名就是网站/网址名加相应后缀，后缀取决于密码的写入方式，如果是文本方式写入，后缀为“.wf”,如果
      * 是二进制方式，后缀为“.w”;密码生成之前有四个选项，这四个选项的内容作为常量写入生成的密码最后，但是在显示
      * 给用户时，会屏蔽掉。
@@ -40,17 +43,10 @@ public class PasswordIO {
      * @param ways JCheckBox中的内容，密码的写入方式
      * @param mainFrame 主界面对象的一个实例
      */
-    public static void writePasswd(String filename, String name, String keyWord, int[] ways, MainFrame mainFrame) {
-
-        if (ways[3] == READ_BY_FILE) {
-            writeUseFileWay(filename, name, keyWord, ways, mainFrame);
-        } else {
-            writeUseBinaryWay(filename, name, keyWord, ways, mainFrame);
-        }
-    }
 
     /**
      * 用二进制方法读取二进制密码文件
+     *
      * @param file 需要读取的二进制密码文件
      * @return
      */
@@ -61,10 +57,21 @@ public class PasswordIO {
             is = new DataInputStream(new FileInputStream(file));
             StringBuffer sb = new StringBuffer();
             while (is.available() != 0) {
-                char c = is.readChar();
-                sb.append(c);
+                sb.append(is.readUTF());
             }
-            strings = sb.toString().split("\n");
+            String binaryStr = sb.toString();
+//这里采用正则表达式来匹配8位长度的数据，然后一个个find()
+            Matcher matcher = Pattern.compile("\\d{8}").matcher(binaryStr);
+
+            StringBuilder result = new StringBuilder();
+            while (matcher.find()) {
+//在binaryStr中找到了8位长度的数据，依次往后面找
+//matcher.group()中存储了找到匹配模式的数据，这里以2进制的形式转换为整数
+                int intVal = Integer.valueOf(matcher.group(), 2);
+//将整数转换为对应的字符，并添加到结果中
+                result.append((char) intVal);
+            }
+            strings = result.toString().split("\n");
         } catch (FileNotFoundException e1) {
             JOptionPane.showMessageDialog(null, "密码文件不存在");
             e1.printStackTrace();
@@ -85,15 +92,26 @@ public class PasswordIO {
 
     /**
      * 用二进制方式向指定路径写入密码文件，该方式写入的密码文件后缀为“.w”
+     *
      * @param filename
      * @param name
      * @param keyWord
      * @param ways
      * @param mainFrame
      */
-    private static void writeUseBinaryWay(String filename, String name, String keyWord, int[] ways, MainFrame mainFrame) {
+    public static boolean writeUseBinaryWay(String filename, String name, String keyWord, int[] ways, MainFrame mainFrame) {
         if (filename.equals("")) {
-            return;
+            return false;
+        }
+        if (checkGB2312(name)) {
+            JOptionPane.showMessageDialog(null, "非文本写入方式不支持用户名为汉字，请确认");
+            mainFrame.getJtfName().setText("");
+            return false;
+        }
+        if (checkGB2312(keyWord)) {
+            JOptionPane.showMessageDialog(null, "非文本写入方式不支持关键字为汉字，请确认");
+            mainFrame.getJtfKeyword().setText("");
+            return false;
         }
         DataOutputStream os = null;
         try {
@@ -104,7 +122,16 @@ public class PasswordIO {
             String info = name + "\n" + keyWord + "\n" + password;
 
             os = new DataOutputStream(new FileOutputStream(file));
-            os.writeChars(info);
+            for (char c : info.toCharArray()) {
+//单个字符转换成的二进制字符串
+                String binaryStr = Integer.toBinaryString(c);
+                String format = String.format("%8s", binaryStr);
+//因为上面转换成二进制后的位数不够8位所以不足的前面补空格，这里是考虑到能够从数据文件批量读取。
+//高位空格替换成0，其实编码后的数据最大范围为2的6次方，首位一定是空格，不然就要用format.startWith(" ");来判断
+                format = format.replace(" ", "0");
+//输出
+                os.writeUTF(format);
+            }
             //生成密码的同时显示在密码框中，密码不显示表示JcheckBox状态的四位数字
             mainFrame.getJtfPasswd().setText(password.substring(0, password.length() - 4));
             mainFrame.getJtfMD5().setText(generateMD5(password.substring(0, password.length() - 4)));
@@ -124,12 +151,15 @@ public class PasswordIO {
                 }
             } catch (IOException e1) {
                 e1.printStackTrace();
+                return false;
             }
         }
+        return true;
     }
 
     /**
      * 用文本方式读取密码文件
+     *
      * @param file
      * @return
      */
@@ -161,15 +191,16 @@ public class PasswordIO {
 
     /**
      * 用文本方式向指定路径写入密码文件，该方式写入的密码文件后缀为“.wf”，可以用普通的文本浏览器打开查看
+     *
      * @param filename
      * @param name
      * @param keyWord
      * @param ways
      * @param mainFrame
      */
-    private static void writeUseFileWay(String filename, String name, String keyWord, int[] ways, MainFrame mainFrame) {
+    public static boolean writeUseFileWay(String filename, String name, String keyWord, int[] ways, MainFrame mainFrame) {
         if (filename.equals("")) {
-            return;
+            return false;
         }
         DataOutputStream os = null;
         try {
@@ -193,6 +224,7 @@ public class PasswordIO {
         } catch (IOException e1) {
             JOptionPane.showMessageDialog(null, "数据写入异常，请重试");
             e1.printStackTrace();
+            return false;
         } finally {
             try {
                 if (os != null) {
@@ -203,6 +235,7 @@ public class PasswordIO {
                 e1.printStackTrace();
             }
         }
+        return true;
     }
 
     /*
@@ -213,12 +246,20 @@ public class PasswordIO {
         if (ways[0] == CONTAIN_WORDS) {
             char[] chars = keyWord.toCharArray();
             for (char aChar : chars) {
-                key.append(generateChar(aChar, 65, 122, 6, 30));
+                int a = aChar;
+                if (a >= 65 && a <= 122) {
+                    key.append(generateChar((char) (a + 100), 48, 57, 8, 3));
+                }
+                key.append(generateChar(aChar, 65, 122, 6, 15));
             }
         }
         if (ways[1] == CONTAIN_NUMBERS) {
             char[] chars = keyWord.toCharArray();
             for (char aChar : chars) {
+                int a = aChar;
+                if (a >= 48 && a <= 57) {
+                    key.append(generateChar((char) (a - 8), 48, 57, 8, 3));
+                }
                 key.append(generateChar(aChar, 48, 57, 8, 3));
             }
         }
@@ -289,7 +330,8 @@ public class PasswordIO {
 
     /**
      * 该方法从密码文件中读取数据后，在主界面上显示出来
-     * @param result 密码文件中返回的数据
+     *
+     * @param result    密码文件中返回的数据
      * @param mainFrame
      */
     public static void showContent(String[] result, MainFrame mainFrame) {
@@ -322,5 +364,16 @@ public class PasswordIO {
         } else {
             mainFrame.getJcbFile().setSelected(false);
         }
+    }
+
+    private static boolean checkGB2312(String str) {
+
+        boolean temp = false;
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        if (m.find()) {
+            temp = true;
+        }
+        return temp;
     }
 }
