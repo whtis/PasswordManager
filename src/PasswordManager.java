@@ -23,6 +23,7 @@ public class PasswordManager {
 
         InitFrame iframe = new InitFrame(frame);
         iframe.pack();
+        iframe.setTitle("byr@wht");
         iframe.setResizable(false);
         iframe.setLocation(screenWidth / 2 - iframe.getWidth() / 2, screenHeight / 2 - iframe.getHeight() / 2);
         iframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

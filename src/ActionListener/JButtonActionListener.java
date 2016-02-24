@@ -1,6 +1,7 @@
 package ActionListener;
 
 import Frame.*;
+import com.sun.org.apache.xpath.internal.compiler.Keywords;
 import utils.*;
 
 import javax.swing.*;
@@ -34,7 +35,7 @@ public class JButtonActionListener implements ActionListener {
                 refreshMainFrame();
             }
         } else if (e.getSource() == mainFrame.getJbtCheck()) {
-            check(e, fileDirPath);
+            check(e, fileDirPath,ways);
         } else if (e.getSource() == mainFrame.getJbtUpdate()) {
             update(e, fileDirPath, ways);
         } else if (e.getSource() == mainFrame.getJbtDelete()) {
@@ -63,6 +64,7 @@ public class JButtonActionListener implements ActionListener {
         mainFrame.getJcbNumber().setSelected(true);
         mainFrame.getJcbSpecialChar().setSelected(false);
         mainFrame.getJcbFile().setSelected(false);
+        updateJList(mainFrame.getFileDirPath());
     }
 
     /*
@@ -105,7 +107,7 @@ public class JButtonActionListener implements ActionListener {
     /*
     该方法用于查看密码文件
      */
-    private void check(ActionEvent e, String fileDirPath) {
+    private void check(ActionEvent e, String fileDirPath, int[] ways) {
         String filename = mainFrame.getJtfFileName().getText();
         if (filename.equals("")) {
             JOptionPane.showMessageDialog(null, "网站/网址为空，请确认");
@@ -113,10 +115,16 @@ public class JButtonActionListener implements ActionListener {
             File binaryFile = new File(fileDirPath + "/" + filename + ".w");
             File file = new File(fileDirPath + "/" + filename + ".wf");
             String[] result = new String[3];
-            if (binaryFile.exists()) {
+            if (binaryFile.exists() && !file.exists()) {
                 result = PasswordIO.readBinaryPassed(binaryFile);
-            } else if (file.exists()) {
+            } else if (file.exists() && !binaryFile.exists()) {
                 result = PasswordIO.readFilePasswd(file);
+            } else if (file.exists() && binaryFile.exists()) {
+                if (ways[3] == PasswordIO.READ_BY_FILE) {
+                    result = PasswordIO.readFilePasswd(file);
+                } else {
+                    result = PasswordIO.readBinaryPassed(binaryFile);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "该帐号不存在，请检查");
             }
@@ -137,19 +145,35 @@ public class JButtonActionListener implements ActionListener {
         if (checkTextFiled(filename, name, keyWord)) {
             File binaryFile = new File(fileDirPath + "/" + filename + ".w");
             File file = new File(fileDirPath + "/" + filename + ".wf");
-            if (binaryFile.exists()) {
-                if (!checkFile(filename, name, binaryFile, ways, "w")) {
+            if (binaryFile.exists() && !file.exists()) {
+                if (checkFile(name, keyWord, binaryFile, ways, "w")) {
                     PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
                     JOptionPane.showMessageDialog(null,"数据更新成功！");
                 } else {
                     JOptionPane.showMessageDialog(null, "数据重复，无需修改");
                 }
-            } else if (file.exists()) {
-                if (!checkFile(filename, name, file, ways, "wf")) {
+            } else if (file.exists() && !binaryFile.exists()) {
+                if (checkFile(name, keyWord, file, ways, "wf")) {
                     PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
                     JOptionPane.showMessageDialog(null, "数据更新成功！");
                 } else {
                     JOptionPane.showMessageDialog(null, "数据重复，无需修改");
+                }
+            } else if (file.exists() && binaryFile.exists()) {
+                if (ways[3] == PasswordIO.READ_BY_FILE) {
+                    if (checkFile(name, keyWord, file, ways, "wf")) {
+                        PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
+                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "数据重复，无需修改");
+                    }
+                } else {
+                    if (checkFile(name, keyWord, binaryFile, ways, "w")) {
+                        PasswordIO.writePasswd(filename, name, keyWord, ways, mainFrame);
+                        JOptionPane.showMessageDialog(null, "数据更新成功！");
+                    } else {
+                        JOptionPane.showMessageDialog(null, "数据重复，无需修改");
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "该帐号不存在，请检查");
@@ -183,7 +207,7 @@ public class JButtonActionListener implements ActionListener {
             mainFrame.getJtfName().setText("");
             mainFrame.getJtfKeyword().setText("");
             mainFrame.getJtfPasswd().setText("");
-            mainFrame.getJbtMD5().setText("");
+            mainFrame.getJtfMD5().setText("");
             mainFrame.getJcbWord().setSelected(true);
             mainFrame.getJcbNumber().setSelected(true);
             mainFrame.getJcbSpecialChar().setSelected(false);
@@ -210,7 +234,7 @@ public class JButtonActionListener implements ActionListener {
     该方法JButtonActionListener的私有辅助方法，用来比对主界面上的内容是否和密码文件一样，以决定是否需要进行
     更新操作
      */
-    private boolean checkFile(String filename, String name, File file, int[] ways, String s) {
+    private boolean checkFile(String name, String keyword, File file, int[] ways, String s) {
         String[] results = new String[3];
         if (s.equals("w")) {
             results = PasswordIO.readBinaryPassed(file);
@@ -222,7 +246,7 @@ public class JButtonActionListener implements ActionListener {
         for (int i = 0; i < ways.length; i++) {
             sb.append(ways[i]);
         }
-        if (sb.toString().equals(sWays) && filename.equals(results[0]) && name.equals(results[1])) {
+        if (sb.toString().equals(sWays) && name.equals(results[0]) && keyword.equals(results[1])) {
             return false;
         } else {
             return true;
