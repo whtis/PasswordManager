@@ -1,7 +1,6 @@
 package utils;
 
 import javax.swing.*;
-import java.util.*;
 
 /**
  * Created by ht on 2016/2/24.
