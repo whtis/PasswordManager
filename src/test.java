@@ -8,7 +8,9 @@ import java.util.regex.*;
  */
 public class test {
     public static void main(String[] args) throws IOException {
-
+        TransformBS transformBS = new TransformBS();
+        transformBS.testB2S();
+        transformBS.testS2B();
     }
 }
 
@@ -26,7 +28,7 @@ class TransformBS {
 
         BASE64Encoder e = new BASE64Encoder();
         String name = "whtis";
-        String keyword = "国家";
+        String keyword = "hehe";
         String password = e.encode(keyword.getBytes());
 
         String info = name + "\n" + keyword + "\n" + password;
