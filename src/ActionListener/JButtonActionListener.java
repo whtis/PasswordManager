@@ -311,7 +311,15 @@ public class JButtonActionListener implements ActionListener {
      */
     private void updateJList(String fileDirPath) {
         String[] files = new File(fileDirPath).list();
-        FileModel fileModel = new FileModel(files);
+        StringBuilder sb = new StringBuilder();
+        //排除其他文件
+        for (int i = 0; i < files.length; i++) {
+            if (files[i].endsWith(".w") || files[i].endsWith("wf")) {
+                sb.append(files[i] + "\n");
+            }
+        }
+        String[] pmFiles = sb.toString().split("\n");
+        FileModel fileModel = new FileModel(pmFiles);
         mainFrame.getJlFileName().setModel(fileModel);
         mainFrame.getJlFileName().updateUI();
     }

@@ -1,6 +1,7 @@
 package utils;
 
 import javax.swing.*;
+import java.util.*;
 
 /**
  * Created by ht on 2016/2/24.
@@ -15,6 +16,7 @@ public class FileModel extends AbstractListModel {
 
     @Override
     public Object getElementAt(int index) {
+        //排除不是密码文件的
         return (index + 1) + "." + files[index++];
     }
 

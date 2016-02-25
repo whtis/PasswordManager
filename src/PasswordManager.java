@@ -34,7 +34,16 @@ public class PasswordManager {
             FileChooser fileChooserFrame = new FileChooser();
             fileChooserFrame.readFilePath(file);
             frame.setFileDirPath(fileChooserFrame.getFileDirPath());
-            FileModel fileModel = new FileModel(new File(fileChooserFrame.getFileDirPath()).list());
+            String[] files = new File(fileChooserFrame.getFileDirPath()).list();
+            //排除文件
+            StringBuilder stringBuilder = new StringBuilder();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].endsWith(".w") || files[i].endsWith("wf")) {
+                    stringBuilder.append(files[i] + "\n");
+                }
+            }
+            String[] pmFiles = stringBuilder.toString().split("\n");
+            FileModel fileModel = new FileModel(pmFiles);
             frame.getJlFileName().setModel(fileModel);
             frame.setVisible(true);
         } else {

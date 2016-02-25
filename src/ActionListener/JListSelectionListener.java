@@ -22,6 +22,7 @@ public class JListSelectionListener implements ListSelectionListener {
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
+
         JList jList = mainFrame.getJlFileName();
         String fileDirPath = mainFrame.getFileDirPath();
         String filename = (String) jList.getSelectedValue();
