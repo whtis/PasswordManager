@@ -318,8 +318,13 @@ public class JButtonActionListener implements ActionListener {
                 sb.append(files[i] + "\n");
             }
         }
-        String[] pmFiles = sb.toString().split("\n");
-        FileModel fileModel = new FileModel(pmFiles);
+        FileModel fileModel = null;
+        if (sb.toString().equals("")) {
+             fileModel = new FileModel(files);
+        } else {
+            String[] pmFiles = sb.toString().split("\n");
+            fileModel = new FileModel(pmFiles);
+        }
         mainFrame.getJlFileName().setModel(fileModel);
         mainFrame.getJlFileName().updateUI();
     }

@@ -31,10 +31,10 @@ public class FileChooser {
             fileDirPath = jFileChooser.getSelectedFile().getAbsolutePath();
         }
         //判断用户选取的路径文件夹中是否为空
-        if (new File(fileDirPath).length() != 0) {
+        if (new File(fileDirPath).list().length != 0) {
             int comfirmInt = JOptionPane.showConfirmDialog(null, "所选文件夹不为空，是否继续");
             if (comfirmInt != JOptionPane.YES_OPTION) {
-                return;
+                System.exit(-1);
             }
         }
         BufferedWriter bw = null;

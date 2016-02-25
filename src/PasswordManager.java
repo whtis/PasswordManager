@@ -37,13 +37,13 @@ public class PasswordManager {
             String[] files = new File(fileChooserFrame.getFileDirPath()).list();
             //排除文件
             StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].endsWith(".w") || files[i].endsWith("wf")) {
-                    stringBuilder.append(files[i] + "\n");
-                }
+            FileModel fileModel = null;
+            if (stringBuilder.toString().equals("")) {
+                fileModel = new FileModel(files);
+            } else {
+                String[] pmFiles = stringBuilder.toString().split("\n");
+                fileModel = new FileModel(pmFiles);
             }
-            String[] pmFiles = stringBuilder.toString().split("\n");
-            FileModel fileModel = new FileModel(pmFiles);
             frame.getJlFileName().setModel(fileModel);
             frame.setVisible(true);
         } else {
