@@ -314,18 +314,17 @@ public class JButtonActionListener implements ActionListener {
         StringBuilder sb = new StringBuilder();
         //排除其他文件
         for (int i = 0; i < files.length; i++) {
-            if (files[i].endsWith(".w") || files[i].endsWith("wf")) {
+            //当配置文件和密码文件处于同一文件夹时，不显示配置文件（liunx下会出现该问题）
+            if ((files[i].endsWith(".w") || files[i].endsWith("wf")) && !files[i].equals(".pmconfig.w")) {
                 sb.append(files[i] + "\n");
             }
         }
         FileModel fileModel = null;
-        if (sb.toString().equals("")) {
-             fileModel = new FileModel(files);
-        } else {
+        if (!sb.toString().equals("")) {
             String[] pmFiles = sb.toString().split("\n");
             fileModel = new FileModel(pmFiles);
+            mainFrame.getJlFileName().setModel(fileModel);
+            mainFrame.getJlFileName().updateUI();
         }
-        mainFrame.getJlFileName().setModel(fileModel);
-        mainFrame.getJlFileName().updateUI();
     }
 }
